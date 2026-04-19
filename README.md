@@ -64,7 +64,7 @@ Since detection is performed on downsampled images (1/8 scale) for performance:
 
 ## Example of Results
 
-Sample detection images and the full CSV database containing the processed results can be found in the [Sample_Results/](./Sample_Results/) directory.
+Sample detection images and the full CSV database containing the processed results can be found in the [Outputs/](./Outputs/) directory.
 
 ### Sample CSV Data Structure:
 The system generates a report where all measurements are mapped back to the **original image resolution**:

@@ -79,7 +79,35 @@ Since detection is performed on downsampled images (1/8 scale) to optimize RAM u
 
 ---
 
-## 6. Limitations & Known Issues
+
+## 6. Reproducibility & Parameters
+
+To ensure the reproducibility of the crater detection results, the following parameters and assumptions are implemented:
+
+### Image Scaling & Memory Constraints
+* **Downsampling Factor**: All input images are processed at **1/8th (12.5%)** of their original linear resolution using `cv::IMREAD_REDUCED_COLOR_8`. This is a mandatory optimization to handle 3GB+ PDS/RDR TIFF files on standard workstations.
+* **Coordinate Re-mapping**: To maintain data integrity, the centroids $(X, Y)$ and radii $(R)$ detected on the 1/8 scale are transformed back to the native coordinate system:
+  $$X_{original} = X_{detected} \times 8$$
+  $$R_{original} = R_{detected} \times 8$$
+
+### Detection Hyperparameters (Hough Circles)
+The algorithm uses four distinct passes of the Circle Hough Transform (CHT) to minimize competition between different crater sizes:
+
+| Parameter | Small | Medium | Large | Extra-Large |
+| :--- | :--- | :--- | :--- | :--- |
+| **Inverse Ratio (dp)** | 1.7 | 1.5 | 1.5 | 1.5 |
+| **Min Distance** | 100 px | 120 px | 200 px | 400 px |
+| **Canny Threshold** | 70 | 65 | 70 | 90 |
+| **Acc. Threshold** | 50 | 60 | 60 | 68 |
+| **Radius Range** | 20-80 | 80-150 | 150-200 | 200-500 |
+
+### Assumptions & Normalization
+* **Bit-Depth Handling**: Since LROC TIFFs can be 16-bit or 32-bit, the pipeline applies a **Min-Max Normalization** to map pixel intensities to a $0-255$ range.
+* **Smoothing**: A $9 \times 9$ Gaussian kernel with $\sigma = 2$ is applied to suppress high-frequency noise from the lunar regolith texture, which otherwise creates "ghost" circles.
+
+---
+
+## 7. Limitations & Known Issues
 
 * **False Positives**: High-contrast shadows near steep mountain ridges or rilles may be incorrectly flagged as craters.
 * **Overlapping Features**: The Circle Hough Transform (CHT) may struggle to distinguish between heavily degraded or overlapping crater rims.
@@ -88,7 +116,7 @@ Since detection is performed on downsampled images (1/8 scale) to optimize RAM u
 
 ---
 
-## 7. Example of Results
+## 8. Example of Results
 
 The system generates a report where all measurements are mapped back to the **original image resolution**:
 
@@ -99,6 +127,6 @@ The system generates a report where all measurements are mapped back to the **or
 
 ---
 
-## 8. Contribution & Contact
+## 9. Contribution & Contact
 
 This is an academic project developed for planetary surface analysis. For questions, suggestions, or contributions, please open an issue or contact the author at alexia.voicu.97@gmail.com .

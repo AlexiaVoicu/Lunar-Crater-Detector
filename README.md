@@ -27,9 +27,9 @@ To ensure reproducibility, the project was developed and tested under the follow
 ├── README.md                # Project documentation
 ├── LICENSE                  # MIT License file
 ├── Sample_Results/          # Samples of processed output
-│   ├── detectat_0.jpg       # Visual verification sample
-│   └── rezultate_cratere.csv # Compiled detection database
-└── imagini_luna/            # Input directory (Place .TIF files here)
+│   ├── detected_31.jpg       # Visual verification sample
+│   └── crater_detection_results.csv # Compiled detection database
+└── moon_images/            # Input directory (Place .TIF files here)
 ```
 ---
 
@@ -59,14 +59,14 @@ Since detection is performed on downsampled images (1/8 scale) to optimize RAM u
     * **Gaussian Blurring**: A $9 \times 9$ kernel reduces sensor noise to prevent false positives.
 4.  **Multi-Stage Detection**: Runs four concurrent Hough Circle passes with adaptive thresholds.
 5.  **Data Export**: 
-    * Saves detection overlays as `detectat_X.jpg` for visual verification.
-    * Exports a global `rezultate_cratere.csv` file.
+    * Saves detection overlays as `detected_X.jpg` for visual verification.
+    * Exports a global `crater_detection_results.csv` file.
 
 ---
 
 ## 5. Usage Instructions
 
-1.  **Preparation**: Create an `imagini_luna/` folder in the root directory and place your LROC `.TIF` files inside.
+1.  **Preparation**: Create an `moon_images/` folder in the root directory and place your LROC `.TIF` files inside.
 2.  **Compilation**: Use the following command (requires OpenCV 4):
     ```bash
     g++ -std=c++17 main2.cpp -o crater_detector `pkg-config --cflags --libs opencv4`
@@ -92,7 +92,7 @@ Since detection is performed on downsampled images (1/8 scale) to optimize RAM u
 
 The system generates a report where all measurements are mapped back to the **original image resolution**:
 
-| Imagine | Categorie | Centru_X_Original | Centru_Y_Original | Raza_Originala_Pixeli | Diametru_Original_Pixeli |
+| Image | Category | X_Original | Y_Original | Radius_Original | Diameter_Original |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | NAC_DTM_NASSAU03.TIF | Mic | 4840 | 15872 | 412 | 824 |
 | NAC_POLE_SOUTH.TIF | Mediu | 12450 | 8920 | 960 | 1920 |

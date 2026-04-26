@@ -23,13 +23,13 @@ To ensure reproducibility, the project was developed and tested under the follow
 
 ```text
 .
-├── main2.cpp                # Main source code (C++)
+├── crater_detector.cpp      # Main source code (C++)
 ├── README.md                # Project documentation
 ├── LICENSE                  # MIT License file
-├── Sample_Results/          # Samples of processed output
-│   ├── detected_31.jpg       # Visual verification sample
-│   └── crater_detection_results.csv # Compiled detection database
-└── moon_images/            # Input directory (Place .TIF files here)
+├── Outputs/                 # Folder containing detection results
+│   ├── detected_31.jpg      # Visual verification sample
+│   └── crater_detection_results.csv # Compiled database
+└── moon_images/             # Input directory (Place .TIF files here)
 ```
 ---
 
@@ -66,12 +66,12 @@ Since detection is performed on downsampled images (1/8 scale) to optimize RAM u
 
 ## 5. Usage Instructions
 
-1.  **Preparation**: Create an `moon_images/` folder in the root directory and place your LROC `.TIF` files inside.
-2.  **Compilation**: Use the following command (requires OpenCV 4):
+1. **Preparation**: Create a `moon_images/` folder and add your LROC `.TIF` files.
+2. **Compilation**:
     ```bash
-    g++ -std=c++17 main2.cpp -o crater_detector `pkg-config --cflags --libs opencv4`
+    g++ -std=c++17 crater_detector.cpp -o crater_detector `pkg-config --cflags --libs opencv4`
     ```
-3.  **Execution**: 
+3. **Execution**: 
     ```bash
     ./crater_detector
     ```

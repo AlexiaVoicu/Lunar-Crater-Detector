@@ -2,71 +2,94 @@
 
 We present a **C++ pipeline** designed for the automated detection and categorization of lunar craters using high-resolution TIFF images from the *Lunar Reconnaissance Orbiter Camera (LROC)*. The system utilizes the **Circle Hough Transform (CHT)** to identify circular features, categorizes them by size, and manages large-scale planetary data (files up to 3GB+) through an optimized downsampling and re-scaling approach.
 
-**Keywords**: OpenCV, C++, Lunar Crater Detection, LROC PDS, Hough Circles, Planetary Data, Image Processing.
+**Author**: Voicu Alexia  
+**Contact**: alexia.voicu.97@gmail.com   
+ **License**: MIT
 
 ---
 
-## Purpose of the Project
+## 1. Requirements & Environment
 
-* **Automated Identification**: Detecting craters across varying lunar terrains (DTM, SHADE, NAC).
-* **Size Categorization**: Classifying craters into four main categories: Small, Medium, Large, and Extra-Large.
-* **Big Data Handling**: Efficiently processing massive TIFF files (3GB+) that exceed standard RAM limits.
-* **Data Export**: Generating a structured CSV database containing coordinates (X, Y), radii, and diameters for further geological analysis.
+To ensure reproducibility, the project was developed and tested under the following environment:
 
----
-
-## General Structure
-
-### 1. main2.cpp – Project Entry Point & Batch Processor
-This module manages the entire workflow:
-* Configures the environment to bypass standard OpenCV pixel limits (`OPENCV_IO_MAX_IMAGE_PIXELS`).
-* Automatically scans the `imagini_luna/` directory for all `.TIF` files.
-* Implements a `try-catch` safety block to prevent program crashes on corrupted or unsupported files.
-* Uses `IMREAD_REDUCED_COLOR_8` for memory-efficient loading (1/8 scale).
-
-### 2. Detection Modules (Categorization Functions)
-The detection logic is split into specialized functions based on crater radii:
-* `CratereMici()`: Detects small craters (scaled radius 20-80 px).
-* `CratereMijlocii()`: Detects medium features (scaled radius 80-150 px).
-* `CratereMari()`: Detects large craters (scaled radius 150-200 px).
-* `CratereFoarteMari()`: Detects massive lunar structures (scaled radius 200-500 px).
-
-### 3. Coordinate & Scale Management
-Since detection is performed on downsampled images (1/8 scale) for performance:
-* Centroids (X, Y) are automatically **re-scaled by a factor of 8** before export.
-* Radii and Diameters are converted back to original pixel units for spatial accuracy.
+* **Operating System**: macOS (tested on Apple Silicon) / Linux (Ubuntu 22.04).
+* **Compiler**: GCC/G++ version 9.0+ supporting the **C++17 standard**.
+* **Libraries**: **OpenCV 4.x** (modules: `imgcodecs`, `highgui`, `imgproc`).
+* **Hardware**: Minimum 8GB RAM recommended for handling large TIFF I/O operations.
 
 ---
 
-## Input Requirements
+## 2. Project Structure
 
-* **Source**: LROC PDS (RDR) Datasets.
-* **Format**: `.TIF` / `.tiff` (Digital Terrain Models or Shaded Relief images).
-* **File Size**: Supports files from 20MB up to **4GB**.
+```text
+.
+├── main2.cpp                # Main source code (C++)
+├── README.md                # Project documentation
+├── LICENSE                  # MIT License file
+├── Sample_Results/          # Samples of processed output
+│   ├── detectat_0.jpg       # Visual verification sample
+│   └── rezultate_cratere.csv # Compiled detection database
+└── imagini_luna/            # Input directory (Place .TIF files here)
+```
+---
+
+## 3. General Structure & Logic
+
+### Detection Modules
+The logic is split into specialized functions based on crater radii (scaled for 1/8 resolution). *Note: Functions were renamed from Romanian to English for consistency with the documentation.*
+* `detectSmallCraters()`: Targets craters with a scaled radius of 20-80 px.
+* `detectMediumCraters()`: Targets features with a scaled radius of 80-150 px.
+* `detectLargeCraters()`: Targets features with a scaled radius of 150-200 px.
+* `detectExtraLargeCraters()`: Targets massive structures with a scaled radius of 200-500 px.
+
+### Coordinate & Scale Management
+Since detection is performed on downsampled images (1/8 scale) to optimize RAM usage:
+* **Scaling Factor**: All centroids (X, Y) are automatically **re-scaled by a factor of 8** before export.
+* **Accuracy**: Radii and Diameters are converted back to original pixel units to ensure spatial accuracy relative to the source TIFF.
 
 ---
 
-## Main Steps
+## 4. Main Pipeline Steps
 
-1.  **Memory Optimization**: Setting `setenv` to allow processing of images up to 2GB of total pixels.
-2.  **Sub-sampling**: Loading images at 1/8 resolution to ensure compatibility with standard hardware (e.g., MacBook RAM).
+1.  **Memory Optimization**: Configures `OPENCV_IO_MAX_IMAGE_PIXELS` to bypass limits and allows processing of images up to 2GB of total pixels.
+2.  **Sub-sampling**: Loads images at 1/8 resolution using `IMREAD_REDUCED_COLOR_8` to ensure compatibility with standard hardware.
 3.  **Pre-processing**: 
-    * Grayscale conversion.
+    * **Grayscale Conversion**: Standardizes input for the Hough Transform.
     * **Min-Max Normalization**: Crucial for DTM/SHADE images to enhance crater rim contrast.
-    * **Gaussian Blurring**: Reducing sensor noise to prevent false positive detections.
-4.  **Multi-Stage Detection**: Running four concurrent Hough Circle passes with adaptive thresholds.
-5.  **Data Scaling**: Transforming local pixel coordinates to global image-space coordinates.
-6.  **Output Generation**:
-    * Saving detection overlays as `detectat_X.jpg` for visual verification.
-    * Exporting a global `rezultate_cratere.csv` file.
+    * **Gaussian Blurring**: A $9 \times 9$ kernel reduces sensor noise to prevent false positives.
+4.  **Multi-Stage Detection**: Runs four concurrent Hough Circle passes with adaptive thresholds.
+5.  **Data Export**: 
+    * Saves detection overlays as `detectat_X.jpg` for visual verification.
+    * Exports a global `rezultate_cratere.csv` file.
 
 ---
 
-## Example of Results
+## 5. Usage Instructions
 
-Sample detection images and the full CSV database containing the processed results can be found in the [Outputs/](./Outputs/) directory.
+1.  **Preparation**: Create an `imagini_luna/` folder in the root directory and place your LROC `.TIF` files inside.
+2.  **Compilation**: Use the following command (requires OpenCV 4):
+    ```bash
+    g++ -std=c++17 main2.cpp -o crater_detector `pkg-config --cflags --libs opencv4`
+    ```
+3.  **Execution**: 
+    ```bash
+    ./crater_detector
+    ```
+4.  **Output**: Results will be generated in the root folder (or `Sample_Results/` if configured).
 
-### Sample CSV Data Structure:
+---
+
+## 6. Limitations & Known Issues
+
+* **False Positives**: High-contrast shadows near steep mountain ridges or rilles may be incorrectly flagged as craters.
+* **Overlapping Features**: The Circle Hough Transform (CHT) may struggle to distinguish between heavily degraded or overlapping crater rims.
+* **Lighting Sensitivity**: Detection accuracy is higher on **DTM (Digital Terrain Models)** than on Shaded Relief maps due to sun-angle artifacts.
+* **Geometric Bias**: The algorithm is optimized for circular features; elliptical impact sites or irregular volcanic calderas may be missed.
+
+---
+
+## 7. Example of Results
+
 The system generates a report where all measurements are mapped back to the **original image resolution**:
 
 | Imagine | Categorie | Centru_X_Original | Centru_Y_Original | Raza_Originala_Pixeli | Diametru_Original_Pixeli |
@@ -76,13 +99,6 @@ The system generates a report where all measurements are mapped back to the **or
 
 ---
 
-## How to Compile and Run
+## 8. Contribution & Contact
 
-To compile the project on a system with **OpenCV 4** installed:
-
-```bash
-# Compile
-g++ main2.cpp -o main1 `pkg-config --cflags --libs opencv4`
-
-# Run
-./main1
+This is an academic project developed for planetary surface analysis. For questions, suggestions, or contributions, please open an issue or contact the author at alexia.voicu.97@gmail.com .

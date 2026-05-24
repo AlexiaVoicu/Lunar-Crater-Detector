@@ -122,8 +122,8 @@ The system generates a report where all measurements are mapped back to the **or
 
 | Image | Category | X_Original | Y_Original | Radius_Original | Diameter_Original |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| NAC_DTM_NASSAU03.TIF | Mic | 4840 | 15872 | 412 | 824 |
-| NAC_POLE_SOUTH.TIF | Mediu | 12450 | 8920 | 960 | 1920 |
+| NAC_DTM_NASSAU03.TIF | Small | 4840 | 15872 | 412 | 824 |
+| NAC_POLE_SOUTH.TIF | Medium | 12450 | 8920 | 960 | 1920 |
 
 ---
 

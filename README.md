@@ -51,7 +51,7 @@ Since detection is performed on downsampled images (1/8 scale) to optimize RAM u
 
 ## 4. Main Pipeline Steps
 
-1.  **Memory Optimization**: Configures `OPENCV_IO_MAX_IMAGE_PIXELS` to bypass limits and allows processing of images up to 2GB of total pixels.
+1.  **Memory Optimization**: Configures `OPENCV_IO_MAX_IMAGE_PIXELS` to bypass limits and allows processing of images up to allow OpenCV to load very large TIFF files that may exceed the default pixel-count limit.
 2.  **Sub-sampling**: Loads images at 1/8 resolution using `IMREAD_REDUCED_COLOR_8` to ensure compatibility with standard hardware.
 3.  **Pre-processing**: 
     * **Grayscale Conversion**: Standardizes input for the Hough Transform.
